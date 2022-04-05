@@ -1,0 +1,21 @@
+.logo{
+width:35px;
+height: 35px;
+}
+.typographies{
+  display:flex;
+  flex-direction:row;
+  justify-content:space-between;
+  align-items: center;
+  width:100em;
+}
+.PaperStyle{
+  position:absolute 
+}
+.Burger{
+  color:cyan
+}
+.userProfile{
+  display:flex;
+  justify-content:space-around
+}

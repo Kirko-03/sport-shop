@@ -1,30 +1,25 @@
-import {AppBar,Button,Paper,MenuList,Typography,Box, IconButton, LinearProgress,MenuItem, Toolbar} from '@material-ui/core'
+import {AppBar,Avatar,Paper,MenuList,Typography,Box, IconButton, LinearProgress,MenuItem, Toolbar, Button} from '@material-ui/core'
 import {Menu} from '@material-ui/icons'
-import  { useState } from 'react';
-
+import  { useContext, useState } from 'react';
+import logo from '../../assets/logo192.png'
 import '@firebase/firestore'
-import 'firebase/auth'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { initializeApp } from "firebase/app";
+import * as firebase from 'firebase/auth'
+import {signInWithPopup } from 'firebase/auth';
+import h from './Header.module.css'
+import {Main} from './Main'
+import { Link } from 'react-router-dom';
+import { Context } from '../..';
+import {useAuthState} from 'react-firebase-hooks/auth'
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDxzsI4wEjdQ_DGIe239-AQVmtjKDKxW4U",
-  authDomain: "sport-shop-fd1bd.firebaseapp.com",
-  projectId: "sport-shop-fd1bd",
-  storageBucket: "sport-shop-fd1bd.appspot.com",
-  messagingSenderId: "688170118195",
-  appId: "1:688170118195:web:d4ccba5bdd36ee67f4c746"
-};
-
-const app = initializeApp(firebaseConfig);
-
-
-const auth = getAuth(app)
-console.log(auth)
 
 export  const Header = () => {
   const [open, setOpen] = useState<boolean>(false);
-
+  const auth = useContext(Context)
+  const [user,loading] = useAuthState(auth)
+  const login = async() =>{
+    const provider = new firebase.GoogleAuthProvider()
+    const user = await signInWithPopup(auth,provider)
+  }
   const handleClick = () => {
     setOpen(!open);
   };
@@ -33,28 +28,26 @@ export  const Header = () => {
  <Box sx={{ flexGrow: 1 }}>
    <AppBar position="static">
      <Toolbar variant="dense">
-     <IconButton style={{color:'cyan'}} aria-label="upload picture" component="span">
-         
-        {open?<div onBlur={()=>handleClick()}>
-          <Menu onClick={()=>handleClick()} />
-        <Paper style={{position:'absolute'}} >
-          
-        <MenuList>
-          <MenuItem>Profile</MenuItem>
-          <MenuItem>My account</MenuItem>
+     <IconButton  aria-label="upload picture" component="span">
+        {open?<div>
+          <Menu className={h.Burger} onBlur={()=>handleClick()} />
+        <Paper className={h.PaperStyle}>   
+        <MenuList  onClick={()=>handleClick()}>
+          <Main/>
+          <MenuItem component={Link} to='/BCA'>My account</MenuItem>
           <MenuItem>Logout</MenuItem>
         </MenuList>
-      </Paper></div>:<Menu onClick={()=>handleClick()} /> 
+      </Paper></div>:<div><Menu  onClick={()=>handleClick()} /></div> 
           }
           
        </IconButton>
-       <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',width:'100em'}}>
+       <div  className={h.typographies}>
        <Typography>
-        News         
+        <img className={h.logo} alt='logo' src={logo}/>         
        </Typography>
-       <Typography>
-     <button onClick={()=>signInWithPopup(auth,new GoogleAuthProvider())}>Войти</button>
-       </Typography>
+       {!loading?<Typography>
+          {user?<div className={h.userProfile}><Avatar src={user.photoURL?user.photoURL:''}  /><Button onClick={()=>auth.signOut()}>Выйти</Button></div>:<Button onClick={()=>login()}>Войти</Button>}
+       </Typography>:<span>...Loading</span>}
        </div>
 
      </Toolbar>
