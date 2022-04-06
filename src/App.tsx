@@ -5,14 +5,16 @@ import { Routes,Route} from 'react-router-dom';
 import { useContext } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Context } from '.';
+import { Loading } from './components/Loading';
 
 
 
 function App() {
   const auth = useContext(Context)
-  const [user] = useAuthState(auth)
+  const [user,loading] = useAuthState(auth)
   return (
-    <div className="App">
+    <div className={loading?"Loading":''}>
+    {!loading?<div className="App">
       
       <Header/>
      {user?<Routes>
@@ -25,6 +27,8 @@ function App() {
      </Routes>:<Routes><Route path='/' element={ <div><Main/></div>} /></Routes>
      
      }
+     
+    </div>:<Loading/>}
     </div>
   );
 }
